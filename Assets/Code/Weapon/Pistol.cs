@@ -6,7 +6,8 @@ public sealed class Pistol : Weapon
 {
     public override void Shoot()
     {
-        if (CanShoot && Time.time >= lastShootTime + shootDelay)
+        
+        if (CanShoot && Time.time >= lastShootTime + weaponData.ShootDelay)
         {
             lastShootTime = Time.time;
             GameObject bullet = bulletPool.GetBullet();
@@ -14,6 +15,7 @@ public sealed class Pistol : Weapon
             bullet.transform.rotation = firePoint.rotation;
             bullet.GetComponent<Bullet>().Initialize(Vector3.forward);
             currentAmmo--;
+            GameEvents.OnShoot?.Invoke();
         }
     }
 

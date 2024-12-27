@@ -6,7 +6,7 @@ public sealed class Bazooka : Weapon
 {
     public override void Shoot()
     {
-        if (CanShoot && Time.time >= lastShootTime + shootDelay)
+        if (CanShoot && Time.time >= lastShootTime + weaponData.ShootDelay)
         {
             lastShootTime = Time.time;
             GameObject bullet = bulletPool.GetBullet();
@@ -14,6 +14,7 @@ public sealed class Bazooka : Weapon
             bullet.transform.rotation = firePoint.rotation;
             bullet.GetComponent<Bullet>().Initialize(Vector3.forward);
             currentAmmo--;
+            GameEvents.OnShoot?.Invoke();
         }
     }
 
