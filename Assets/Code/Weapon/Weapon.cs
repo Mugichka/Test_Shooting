@@ -44,6 +44,7 @@ public abstract class Weapon : MonoBehaviour, IWeapon
         {
             reloadCts = new CancellationTokenSource();
             isReloading = true;
+            GameEvents.OnReloadStart?.Invoke();
             try
             {
                 await UniTask.Delay(System.TimeSpan.FromSeconds(weaponData.ReloadTime), cancellationToken: token);
