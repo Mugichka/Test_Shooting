@@ -60,6 +60,7 @@ namespace StarterAssets
 		private float _verticalVelocity;
 		private float _terminalVelocity = 53.0f;
 
+
 		// timeout deltatime
 		private float _jumpTimeoutDelta;
 		private float _fallTimeoutDelta;
@@ -115,6 +116,8 @@ namespace StarterAssets
 			JumpAndGravity();
 			GroundedCheck();
 			Move();
+
+			//GroundedCheker.onvarchange -= GroundedCheck;
 		}
 
 		private void LateUpdate()
@@ -124,9 +127,17 @@ namespace StarterAssets
 
 		private void GroundedCheck()
 		{
+			bool wasGrounded = Grounded;
 			// set sphere position, with offset
 			Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
 			Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
+
+			if(!wasGrounded && Grounded)
+				{
+					wasGrounded = Grounded;
+					GameEvents.OnPlayerLand?.Invoke();
+					Debug.Log("Land");
+				}
 		}
 
 		private void CameraRotation()
@@ -194,6 +205,15 @@ namespace StarterAssets
 				inputDirection = transform.right * _input.move.x + transform.forward * _input.move.y;
 			}
 
+			if(inputDirection != Vector3.zero)
+			{
+				GameEvents.OnPlayerMove?.Invoke();
+			}
+			else
+			{
+				GameEvents.OnPlayerStopMove?.Invoke();
+			}
+
 			// move the player
 			_controller.Move(inputDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 		}
@@ -216,6 +236,8 @@ namespace StarterAssets
 				{
 					// the square root of H * -2 * G = how much velocity needed to reach desired height
 					_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+
+					GameEvents.OnPlayerJump?.Invoke();
 				}
 
 				// jump timeout

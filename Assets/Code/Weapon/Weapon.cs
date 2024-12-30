@@ -44,18 +44,19 @@ public abstract class Weapon : MonoBehaviour, IWeapon
         {
             reloadCts = new CancellationTokenSource();
             isReloading = true;
-            GameEvents.OnReloadStart?.Invoke();
             try
             {
+                GameEvents.OnReloadStart?.Invoke();
                 await UniTask.Delay(System.TimeSpan.FromSeconds(weaponData.ReloadTime), cancellationToken: token);
                 currentAmmo = MaxAmmo;
             }
             catch (OperationCanceledException) { }
             finally
             {
+                //GameEvents.OnReloadStop?.Invoke();
                 isReloading = false;
-                GameEvents.OnReloadFinish?.Invoke();
                 reloadCts.Dispose();
+                GameEvents.OnReloadFinish?.Invoke();
             }
         }
     }
